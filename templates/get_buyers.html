@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ujikom 39</title>
+    <style>
+        /* Add CSS styling for a better appearance */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        form {
+            border: 1px solid #ddd;
+            padding: 20px;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .delete-button {
+        background-color: #FF0000; /* Warna merah */
+        color: white;
+        padding: 5px 10px; /* Mengatur padding untuk mengurangi ukuran tombol */
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .delete-button:hover {
+        background-color: #FF3333; /* Warna merah yang lebih gelap saat tombol dihover */
+    }
+
+    /* CSS untuk posisi tombol di tengah kolom */
+    .centered-button {
+        text-align: center;
+    }
+    </style>
+</head>
+<body>
+    <h1>Data Pembeli</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Pembeli</th>
+                <th>Nama Pembeli</th>
+                <th>Jenis Kelamin</th>
+                <th>Nomor Telepon</th>
+                <th>Alamat</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for buyer in buyers.buyers %}
+                <tr>
+                    <td>{{ buyer.id_pembeli }}</td>
+                    <td>{{ buyer.nama_pembeli }}</td>
+                    <td>{{ buyer.jk }}</td>
+                    <td>{{ buyer.no_tlp }}</td>
+                    <td>{{ buyer.alamat }}</td>
+                    <td class="centered-button"> <!-- Menggunakan class untuk posisi tengah -->
+                        <button class="delete-button" type="button" onclick="deleteBuyer('{{ buyer.id_pembeli }}')">Hapus</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Input Data Pembeli</h2>
+    <form id="dataForm">
+        <label for="id_pembeli">ID Pembeli:</label>
+        <input type="text" id="id_pembeli" name="id_pembeli" placeholder="Masukkan ID Pembeli" required><br>
+
+        <label for="nama_pembeli">Nama Pembeli:</label>
+        <input type="text" id="nama_pembeli" name="nama_pembeli" placeholder="Masukkan nama pembeli" required><br>
+
+        <label for="jk">Jenis Kelamin:</label>
+        <input type="text" id="jk" name="jk" placeholder="Laki-laki / Perempuan" required><br>
+
+        <label for="no_tlp">Nomor Telepon:</label>
+        <input type="text" id="no_tlp" name="no_tlp" placeholder="Masukkan nomor telepon" required><br>
+
+        <label for="alamat">Alamat:</label>
+        <input type="text" id="alamat" name="alamat" placeholder="Masukkan alamat" required><br>
+
+        <button type="button" onclick="submitData()">Submit</button>
+    </form>
+
+    <script>
+        function submitData() {
+            const form = document.getElementById("dataForm");
+            const formData = new FormData(form);
+
+            const json = {};
+            formData.forEach((value, key) => {
+                // Check if the key is "id_pembeli"
+                if (key === "id_pembeli") {
+                        // Convert the "id_pembeli" value to an integer
+                        json[key] = parseInt(value, 10); // Assuming base 10
+                    } else {
+                        json[key] = value;
+                }
+            });
+
+            // Now 'json' contains the form data as a JSON object
+            // You can send this JSON object to your server using an XMLHttpRequest or fetch
+
+            // Example using fetch:
+            console.log(json);
+            fetch('http://localhost/pembeli', {
+                method: 'POST',
+                body: JSON.stringify(json),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                // Handle the response from your server
+                alert('Data pembeli berhasil dimasukkan');
+                window.location.href = 'http://localhost/pembeli'
+            }).catch(error => {
+                // Handle any errors
+            });
+        }
+
+
+        function deleteBuyer(id) {
+        if (confirm("Anda yakin ingin menghapus pembeli dengan ID " + id + "?")) {
+            // Kirim permintaan penghapusan ke server dengan 'id'
+            fetch(`http://localhost/pembeli/${id}`, {
+                method: 'DELETE',
+            }).then(response => {
+                // Handle the response from your server (e.g., success or error message)
+                alert('Data pembeli berhasil dihapus');
+                window.location.reload(); // Refresh halaman setelah penghapusan
+            }).catch(error => {
+                // Handle any errors
+            });
+        }
+    }
+
+    // ... (
+
+
+    </script>
+</body>
+</html>
